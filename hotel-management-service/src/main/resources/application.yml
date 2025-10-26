@@ -1,13 +1,34 @@
 server:
   port: 8082
+  servlet:
+    context-path: /hotel-management-service
 
 
 spring:
   application:
     name: hotel-management-service
+  datasource:
+    url: ${DATABASE_URL:jdbc:h2:mem:hotel_management_service_db}
+    username: ${DATABASE_USER:sa}
+    password: ${DATABASE_PASSWORD:sa}
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: true
 
 
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
+
+
+app:
+  jwt:
+    secret: mephimephimephimephimephimephimephimephimephimephimephimephimephimephimephimephi
