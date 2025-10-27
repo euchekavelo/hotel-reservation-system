@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Entity
 @Table(name = "room_reservations")
@@ -19,6 +20,8 @@ public class RoomReservation {
     private long id;
 
     private long bookingId;
+
+    private UUID requestId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")

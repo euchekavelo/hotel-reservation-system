@@ -37,6 +37,6 @@ app:
 
 hotel-management-service:
   api:
-    base-rul: http://hotel-management-service
+    base-url: http://hotel-management-service/hotel-management-service
     timeout: 30000
     retries: 2

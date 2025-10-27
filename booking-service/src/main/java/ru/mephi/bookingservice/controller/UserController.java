@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import ru.mephi.bookingservice.dto.request.ShortUserRequestDto;
 import ru.mephi.bookingservice.dto.request.UserRequestDto;
 import ru.mephi.bookingservice.dto.response.TokenResponseDto;
 import ru.mephi.bookingservice.dto.response.UserResponseDto;
@@ -23,6 +24,7 @@ public class UserController {
     private final UserMapper userMapper;
     private final TokenService tokenService;
 
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @PostMapping
     public ResponseEntity<UserResponseDto> createUser(@Valid @RequestBody UserRequestDto userRequestDto) {
         User user = userMapper.userRequestDtoToUser(userRequestDto);
@@ -31,6 +33,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userMapper.userToUserResponseDto(savedUser));
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> deleteUserById(@PathVariable Long userId) {
         userService.deleteUserById(userId);
@@ -38,6 +41,7 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @PatchMapping("/{userId}")
     public ResponseEntity<UserResponseDto> updateUserById(@PathVariable Long userId,
                                                           @Valid @RequestBody UserRequestDto userRequestDto) {
@@ -60,18 +64,13 @@ public class UserController {
     }
 
     @PostMapping("/auth")
-    public ResponseEntity<TokenResponseDto> authenticateUser(@Valid @RequestBody UserRequestDto userRequestDto) {
-        User user = userService.getUserByUsernameAndPassword(userRequestDto.getUsername(), userRequestDto.getPassword());
+    public ResponseEntity<TokenResponseDto> authenticateUser(@Valid @RequestBody ShortUserRequestDto shortUserRequestDto) {
+        User user = userService.getUserByUsernameAndPassword(shortUserRequestDto.getUsername(),
+                shortUserRequestDto.getPassword());
         TokenResponseDto tokenResponseDto = TokenResponseDto.builder()
                 .token(tokenService.createToken(Long.toString(user.getId()), user.getRole().name()))
                 .build();
 
         return ResponseEntity.ok(tokenResponseDto);
-    }
-
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
-    @GetMapping("/test")
-    public String test() {
-        return "test";
     }
 }

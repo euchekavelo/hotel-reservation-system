@@ -3,6 +3,7 @@ package ru.mephi.hotelmanagementservice.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.mephi.hotelmanagementservice.dto.request.HotelRequestDto;
 import ru.mephi.hotelmanagementservice.dto.response.HotelResponseDto;
@@ -20,6 +21,7 @@ public class HotelController {
     private final HotelService hotelService;
     private final HotelMapper hotelMapper;
 
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @PostMapping
     public ResponseEntity<HotelResponseDto> addHotel(@RequestBody HotelRequestDto hotelRequestDto) {
         Hotel hotel = hotelMapper.hotelRequestDtoToHotel(hotelRequestDto);
@@ -28,6 +30,7 @@ public class HotelController {
         return ResponseEntity.status(HttpStatus.CREATED).body(hotelMapper.hotelToHotelResponseDto(savedHotel));
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_USER')")
     @GetMapping
     public ResponseEntity<List<HotelResponseDto>> getAllHotels(@RequestParam(defaultValue = "0") int page,
                                                @RequestParam(defaultValue = "10") int size) {

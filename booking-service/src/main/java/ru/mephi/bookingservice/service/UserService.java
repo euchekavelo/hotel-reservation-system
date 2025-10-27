@@ -1,7 +1,6 @@
 package ru.mephi.bookingservice.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.mephi.bookingservice.exception.UserNotFoundException;
@@ -41,10 +40,14 @@ public class UserService {
     }
 
     public User getUserByUsernameAndPassword(String username, String password) {
-        String encodedPassword = passwordEncoder.encode(password);
+        User findedUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("Пользователь с указанным username не найден."));
 
-        return userRepository.findByUsernameAndPassword(username, encodedPassword)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь с указанным именем и паролем не найден."));
+        if (!passwordEncoder.matches(password, findedUser.getPassword())) {
+            throw new UserNotFoundException("Пользователь с указанным паролем не найден.");
+        }
+
+        return findedUser;
     }
 
     public User getUserById(Long id) {
