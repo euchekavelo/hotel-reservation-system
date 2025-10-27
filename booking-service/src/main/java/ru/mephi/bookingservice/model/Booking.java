@@ -9,6 +9,7 @@ import ru.mephi.bookingservice.model.enums.Status;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "bookings")
@@ -26,6 +27,8 @@ public class Booking {
     private User user;
 
     private long roomId;
+
+    private UUID requestId;
 
     private LocalDate startDate;
 

@@ -3,6 +3,7 @@ package ru.mephi.hotelmanagementservice.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.mephi.hotelmanagementservice.dto.request.RoomRequestDto;
 import ru.mephi.hotelmanagementservice.dto.request.RoomReservationRequestDto;
@@ -16,6 +17,8 @@ import ru.mephi.hotelmanagementservice.model.RoomReservation;
 import ru.mephi.hotelmanagementservice.service.RoomReservationService;
 import ru.mephi.hotelmanagementservice.service.RoomService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/rooms")
 @RequiredArgsConstructor
@@ -26,6 +29,7 @@ public class RoomController {
     private final RoomReservationService roomReservationService;
     private final RoomReservationMapper roomReservationMapper;
 
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @PostMapping
     public ResponseEntity<RoomResponseDto> addRoom(@RequestBody RoomRequestDto roomRequestDto) {
         Room room = roomMapper.roomRequestDtoToRoom(roomRequestDto);
@@ -52,5 +56,19 @@ public class RoomController {
         roomReservationService.removeRoomReservation(roomId, shortRoomReservationRequestDto.getReservationId());
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/recommend")
+    public ResponseEntity<List<RoomResponseDto>> getListOfRecommendedRooms(@RequestParam(defaultValue = "0") int page,
+                                                                           @RequestParam(defaultValue = "10") int size,
+                                                                           @RequestParam String startDate,
+                                                                           @RequestParam String endDate) {
+
+        List<Room> recommendedRooms = roomService.getListOfRecommendedRooms(startDate, endDate, page, size);
+        List<RoomResponseDto> roomResponseDtoList = recommendedRooms.stream()
+                .map(roomMapper::roomToRoomResponseDto)
+                .toList();
+
+        return ResponseEntity.ok(roomResponseDtoList);
     }
 }
