@@ -40,6 +40,7 @@ API Gateway маршрутизирует запросы, дополняя их �
 git clone https://github.com/euchekavelo/hotel-reservation-system.git
 ```
 2) Открыть через Intellij IDEA склонированный проект `hotel-reservation-system`.
+3) Внутри проекта открыть справа контекстное меню Gradle и через значок **+** (если навести будет надпись **Link Gradle Project**) указать папки модулей `eureka-server`, `booking-service`, `hotel-management-service`, `api-gateway`.
 3) Запустить первый модуль `eureka-server` через единственных метод ***main*** класса ***EurekaServerApplication***;
 4) Запустить второй модуль `booking-service` через единственных метод ***main*** класса ***BookingServiceApplication***;
 5) Запустить третий модуль `hotel-management-service` через единственных метод ***main*** класса ***HotelManagementServiceApplication***;
