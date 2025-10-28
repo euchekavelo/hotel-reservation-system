@@ -1,5 +1,6 @@
 package ru.mephi.hotelmanagementservice.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +16,7 @@ public class RoomReservationController {
 
     private final RoomReservationService roomReservationService;
 
+    @SecurityRequirements
     @DeleteMapping("/by-booking/{bookingId}")
     public ResponseEntity<Void> deleteRoomReservationById(@PathVariable long bookingId) {
         roomReservationService.deleteRoomReservationByBookingId(bookingId);

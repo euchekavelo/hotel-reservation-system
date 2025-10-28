@@ -1,5 +1,6 @@
 package ru.mephi.hotelmanagementservice.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +39,7 @@ public class RoomController {
         return ResponseEntity.status(HttpStatus.CREATED).body(roomMapper.roomToRoomResponseDto(savedRoom));
     }
 
+    @SecurityRequirements
     @PostMapping("/{roomId}/confirm-availability")
     public ResponseEntity<RoomReservationResponseDto> confirmRoomAvailability(@PathVariable long roomId,
                                              @RequestBody RoomReservationRequestDto roomReservationRequestDto) {
@@ -49,6 +51,7 @@ public class RoomController {
         return ResponseEntity.ok(roomReservationMapper.roomReservationToRoomReservationResponseDto(savedRoomReservation));
     }
 
+    @SecurityRequirements
     @PostMapping("/{roomId}/release")
     public ResponseEntity<Void> removeRoomReservation(@PathVariable long roomId,
                                     @RequestBody ShortRoomReservationRequestDto shortRoomReservationRequestDto) {
@@ -58,6 +61,7 @@ public class RoomController {
         return ResponseEntity.noContent().build();
     }
 
+    @SecurityRequirements
     @GetMapping("/recommend")
     public ResponseEntity<List<RoomResponseDto>> getListOfRecommendedRooms(@RequestParam(defaultValue = "0") int page,
                                                                            @RequestParam(defaultValue = "10") int size,
