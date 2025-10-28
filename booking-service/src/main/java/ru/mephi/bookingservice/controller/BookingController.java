@@ -15,7 +15,6 @@ import ru.mephi.bookingservice.model.Booking;
 import ru.mephi.bookingservice.service.BookingService;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/bookings")
@@ -31,7 +30,7 @@ public class BookingController {
                                                             @RequestBody BookingRequestDto bookingRequestDto,
                                                             HttpServletRequest request) {
 
-        UUID requestId = UUID.fromString(request.getHeader("X-Request-Id"));
+        String requestId = request.getHeader("X-Request-Id");
         Booking booking = bookingMapper.bookingRequestDtoToBooking(bookingRequestDto);
         Booking savedBooking = bookingService.createBooking(booking, Long.parseLong(jwt.getSubject()),
                 bookingRequestDto.getAutoSelect(), requestId);
