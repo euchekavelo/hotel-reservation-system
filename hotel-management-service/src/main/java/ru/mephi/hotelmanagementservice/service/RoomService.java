@@ -5,7 +5,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import ru.mephi.hotelmanagementservice.dto.response.RoomResponseDto;
 import ru.mephi.hotelmanagementservice.exception.RoomNotFoundException;
 import ru.mephi.hotelmanagementservice.model.Hotel;
 import ru.mephi.hotelmanagementservice.model.Room;
@@ -36,6 +35,12 @@ public class RoomService {
     public List<Room> getListOfRecommendedRooms(String startDate, String endDate, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.Direction.ASC, "times_booked");
 
-        return roomRepository.getListOfRecommendedRooms(startDate, endDate, pageable);
+        return roomRepository.getListOfAvailableRooms(startDate, endDate, pageable);
+    }
+
+    public List<Room> getListOfRooms(String startDate, String endDate, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        return roomRepository.getListOfAvailableRooms(startDate, endDate, pageable);
     }
 }

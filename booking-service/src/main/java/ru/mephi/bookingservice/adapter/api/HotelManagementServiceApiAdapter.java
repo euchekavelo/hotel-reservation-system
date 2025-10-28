@@ -9,6 +9,7 @@ import reactor.util.retry.Retry;
 import ru.mephi.bookingservice.dto.external.request.RoomReservationRequestDto;
 import ru.mephi.bookingservice.dto.external.request.ShortRoomReservationRequestDto;
 import ru.mephi.bookingservice.dto.external.response.RoomReservationResponseDto;
+import ru.mephi.bookingservice.dto.external.response.RoomResponseDto;
 import ru.mephi.bookingservice.exception.ExternalServiceException;
 
 import java.time.Duration;
@@ -88,7 +89,35 @@ public class HotelManagementServiceApiAdapter {
                     .retryWhen(Retry.backoff(retries, Duration.ofMillis(500)))
                     .block();
         } catch (Exception ex) {
-            throw new ExternalServiceException("Произошла ошибка при попытке удаления резерва комнаты: " + ex.getMessage());
+            throw new ExternalServiceException("Произошла ошибка при попытке удаления резерва номера: " + ex.getMessage());
+        }
+    }
+
+
+    public long getRecommendedRoomByDate(LocalDate startDate, LocalDate endDate) {
+        try {
+            RoomResponseDto roomResponseDto = webClient.get()
+                    .uri(uriBuilder -> uriBuilder.path("/rooms/recommend")
+                            .queryParam("page", 0)
+                            .queryParam("size", 1)
+                            .queryParam("startDate", startDate)
+                            .queryParam("endDate", endDate)
+                            .build())
+                    .retrieve()
+                    .bodyToFlux(RoomResponseDto.class)
+                    .timeout(Duration.ofMillis(timeout))
+                    .retryWhen(Retry.backoff(retries, Duration.ofMillis(500)))
+                    .blockFirst();
+
+            return roomResponseDto.getId();
+        } catch (Exception ex) {
+            if (ex instanceof NullPointerException) {
+                throw new ExternalServiceException("Произошла ошибка при попытке получить информацию " +
+                        "о рекомендованном номере на указанные даты: свободный номер на указанные даты отобрать не удалось.");
+            }
+
+            throw new ExternalServiceException("Произошла ошибка при попытке получить информацию " +
+                    "о рекомендованной комнате на указанные даты: " + ex.getMessage());
         }
     }
 }

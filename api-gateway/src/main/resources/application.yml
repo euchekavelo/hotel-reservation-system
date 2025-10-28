@@ -19,3 +19,12 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
+
+
+springdoc:
+  swagger-ui:
+    urls:
+      - name: booking-service
+        url: /booking-service/v3/api-docs
+      - name: hotel-management-service
+        url: /hotel-management-service/v3/api-docs

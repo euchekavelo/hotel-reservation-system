@@ -71,4 +71,19 @@ public class RoomController {
 
         return ResponseEntity.ok(roomResponseDtoList);
     }
+
+    @PreAuthorize("hasAuthority('SCOPE_USER')")
+    @GetMapping
+    public ResponseEntity<List<RoomResponseDto>> getListOfRooms(@RequestParam(defaultValue = "0") int page,
+                                                                @RequestParam(defaultValue = "10") int size,
+                                                                @RequestParam String startDate,
+                                                                @RequestParam String endDate) {
+
+        List<Room> rooms = roomService.getListOfRooms(startDate, endDate, page, size);
+        List<RoomResponseDto> roomResponseDtoList = rooms.stream()
+                .map(roomMapper::roomToRoomResponseDto)
+                .toList();
+
+        return ResponseEntity.ok(roomResponseDtoList);
+    }
 }
