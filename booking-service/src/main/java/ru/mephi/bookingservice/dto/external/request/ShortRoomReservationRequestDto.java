@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class ShortRoomReservationRequestDto {
 
-    private long reservationId;
+    private Long reservationId;
 }

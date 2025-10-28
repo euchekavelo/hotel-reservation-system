@@ -34,9 +34,21 @@ public class BookingService {
             return findedBooking;
         }
 
+        LocalDate now = LocalDate.now();
         LocalDate startDate = booking.getStartDate();
         LocalDate endDate = booking.getEndDate();
+        if (startDate.isAfter(endDate) || (!startDate.isAfter(now) && !endDate.isAfter(now))) {
+            throw new IllegalArgumentException("Дата начала заезда не должна превышать дату окончания заезда, " +
+                    "а также даты должны быть больше текущей даты.");
+        }
+
         User currentUser = userService.getUserById(userId);
+
+        if (autoSelect) {
+            long roomId = hotelManagementServiceApiAdapter.getRecommendedRoomByDate(startDate, endDate);
+            booking.setRoomId(roomId);
+        }
+
         booking.setRequestId(requestId);
         booking.setUser(currentUser);
         booking.setStatus(Status.PENDING);
@@ -69,17 +81,6 @@ public class BookingService {
         return bookings.getContent();
     }
 
-    private void performCompensationForBooking(UUID requestId,long reservationId, long bookingId, long roomId) {
-        if (reservationId != 0L) {
-            try {
-                hotelManagementServiceApiAdapter.removeRoomReservation(roomId, reservationId);
-            } catch (Exception exception) {
-                log.error("[Запрос ID {}] При попытке выполнить отмену резерва номера для бронирования с ID {} " +
-                                "возникла ошибка: {}", requestId, bookingId, exception.getMessage());
-            }
-        }
-    }
-
     public Booking getBookingByIdAndUserId(long bookingId, long userId) {
         User currentUser = userService.getUserById(userId);
 
@@ -94,5 +95,16 @@ public class BookingService {
         bookingRepository.delete(booking);
 
         hotelManagementServiceApiAdapter.deleteRoomReservationByBookingId(bookingId);
+    }
+
+    private void performCompensationForBooking(UUID requestId,long reservationId, long bookingId, long roomId) {
+        if (reservationId != 0L) {
+            try {
+                hotelManagementServiceApiAdapter.removeRoomReservation(roomId, reservationId);
+            } catch (Exception exception) {
+                log.error("[Запрос ID {}] При попытке выполнить отмену резерва номера для бронирования с ID {} " +
+                        "возникла ошибка: {}", requestId, bookingId, exception.getMessage());
+            }
+        }
     }
 }

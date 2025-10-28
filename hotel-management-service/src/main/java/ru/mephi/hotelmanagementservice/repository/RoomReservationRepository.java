@@ -16,5 +16,5 @@ public interface RoomReservationRepository extends JpaRepository<RoomReservation
             "(rr.startDate <= :endDate AND rr.endDate >= :startDate)")
     List<RoomReservation> findOverlappingRoomReservation(Room room, LocalDate startDate, LocalDate endDate);
 
-    long deleteByBookingId(long bookingId);
+    void deleteByBookingId(Long bookingId);
 }

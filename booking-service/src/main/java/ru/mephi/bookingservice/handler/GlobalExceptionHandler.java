@@ -18,7 +18,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(getErrorResponseDto(ex.getMessage()));
     }
 
-    @ExceptionHandler({MethodArgumentNotValidException.class})
+    @ExceptionHandler({MethodArgumentNotValidException.class, IllegalArgumentException.class})
     public ResponseEntity<ErrorResponseDto> handleException(Exception ex) {
         return ResponseEntity.badRequest().body(getErrorResponseDto(ex.getMessage()));
     }

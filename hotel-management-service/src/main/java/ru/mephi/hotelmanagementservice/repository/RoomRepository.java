@@ -22,8 +22,9 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
             "SELECT rs.* \n" +
             "FROM   rooms rs \n" +
             "WHERE  rs.id NOT IN (\n " +
-                    "SELECT rrs.room_id \n" +
-                    "FROM   room_reservations rrs \n" +
-                    "WHERE  rrs.start_date <= :endDate AND rrs.end_date >= :startDate)", nativeQuery = true)
-    List<Room> getListOfRecommendedRooms(String startDate, String endDate, Pageable pageable);
+                        "SELECT rrs.room_id \n" +
+                        "FROM   room_reservations rrs \n" +
+                        "WHERE  rrs.start_date <= :endDate AND rrs.end_date >= :startDate \n" +
+                    ")", nativeQuery = true)
+    List<Room> getListOfAvailableRooms(String startDate, String endDate, Pageable pageable);
 }

@@ -35,6 +35,7 @@ public class UserService {
     public User updateUserById(Long userId, User user) {
         User findedUser = getUserById(userId);
         User updatedUser = userMapper.userToUser(findedUser, user);
+        updatedUser.setId(findedUser.getId());
 
         return createUser(updatedUser);
     }

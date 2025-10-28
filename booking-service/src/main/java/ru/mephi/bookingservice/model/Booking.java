@@ -28,6 +28,7 @@ public class Booking {
 
     private long roomId;
 
+    @Column(unique = true, nullable = false)
     private UUID requestId;
 
     private LocalDate startDate;

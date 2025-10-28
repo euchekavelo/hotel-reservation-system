@@ -8,7 +8,7 @@ import java.util.UUID;
 @Data
 public class RoomReservationRequestDto {
 
-    private long bookingId;
+    private Long bookingId;
     private LocalDate startDate;
     private LocalDate endDate;
     private UUID requestId;
