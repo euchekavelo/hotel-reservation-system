@@ -28,8 +28,13 @@ public class BookingService {
     private final HotelManagementServiceApiAdapter hotelManagementServiceApiAdapter;
 
     @Transactional
-    public Booking createBooking(Booking booking, long userId, Boolean autoSelect, UUID requestId) {
-        Booking findedBooking = bookingRepository.findByRequestId(requestId).orElse(null);
+    public Booking createBooking(Booking booking, long userId, Boolean autoSelect, String requestId) {
+        if (requestId == null || requestId.isEmpty()) {
+            requestId = UUID.randomUUID().toString();
+        }
+
+        UUID requestUuid = UUID.fromString(requestId);
+        Booking findedBooking = bookingRepository.findByRequestId(requestUuid).orElse(null);
         if (findedBooking != null) {
             return findedBooking;
         }
@@ -49,25 +54,25 @@ public class BookingService {
             booking.setRoomId(roomId);
         }
 
-        booking.setRequestId(requestId);
+        booking.setRequestId(requestUuid);
         booking.setUser(currentUser);
         booking.setStatus(Status.PENDING);
         Booking savedBooking = bookingRepository.saveAndFlush(booking);
-        log.info("[Запрос ID {}] Сформировано бронирование с ID {} в статусе {}", requestId,
+        log.info("[Запрос ID {}] Сформировано бронирование с ID {} в статусе {}", requestUuid,
                 savedBooking.getId(), savedBooking.getStatus().name());
 
         long reservationId = 0L;
         try {
             reservationId = hotelManagementServiceApiAdapter
-                    .confirmRoomAvailability(savedBooking.getRoomId(), savedBooking.getId(), startDate, endDate, requestId);
+                    .confirmRoomAvailability(savedBooking.getRoomId(), savedBooking.getId(), startDate, endDate, requestUuid);
             savedBooking.setStatus(Status.CONFIRMED);
         } catch (Exception ex) {
-            log.error("[Запрос ID {}] При формировании бронирования с ID {} возникла ошибка: {}", requestId,
+            log.error("[Запрос ID {}] При формировании бронирования с ID {} возникла ошибка: {}", requestUuid,
                     savedBooking.getId(), ex.getMessage());
             savedBooking.setStatus(Status.CANCELLED);
-            performCompensationForBooking(requestId, reservationId, savedBooking.getId(), booking.getRoomId());
+            performCompensationForBooking(requestUuid, reservationId, savedBooking.getId(), booking.getRoomId());
         }
-        log.info("[Запрос ID {}] Для бронирования с ID {} изменен статус на {}", requestId,
+        log.info("[Запрос ID {}] Для бронирования с ID {} изменен статус на {}", requestUuid,
                 savedBooking.getId(), savedBooking.getStatus().name());
 
         return bookingRepository.saveAndFlush(savedBooking);
