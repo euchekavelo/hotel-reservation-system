@@ -1,5 +1,6 @@
 package ru.mephi.bookingservice.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -52,6 +53,7 @@ public class UserController {
         return ResponseEntity.ok(userMapper.userToUserResponseDto(updatedUser));
     }
 
+    @SecurityRequirements
     @PostMapping("/register")
     public ResponseEntity<TokenResponseDto> registerUser(@Valid @RequestBody UserRequestDto userRequestDto) {
         User user = userMapper.userRequestDtoToUser(userRequestDto);
@@ -63,6 +65,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(tokenResponseDto);
     }
 
+    @SecurityRequirements
     @PostMapping("/auth")
     public ResponseEntity<TokenResponseDto> authenticateUser(@Valid @RequestBody ShortUserRequestDto shortUserRequestDto) {
         User user = userService.getUserByUsernameAndPassword(shortUserRequestDto.getUsername(),
